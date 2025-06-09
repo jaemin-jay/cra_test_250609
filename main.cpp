@@ -7,21 +7,17 @@ int main()
 }
 */
 
-
 #include <stdio.h>
 #include <string.h>
 #include <stdlib.h>
 
 #define CLEAR_SCREEN "\033[H\033[2J"
 
-int stack[10];
-
-void selectCarType(int car_type);
-void selectEngine(int engine);
-void selectbrakeSystem(int brake_system);
-void selectSteeringSystem(int steer_system);
-void runProducedCar();
-void testProducedCar();
+void selectCarType(int car_type, int *stack);
+void selectEngine(int engine, int *stack);
+void selectbrakeSystem(int brake_system, int *stack);
+void selectSteeringSystem(int steer_system, int *stack);
+void runProducedCar(const int * const stack);
 void delay(int ms);
 
 enum QuestionType
@@ -276,6 +272,7 @@ int go_back_to_first(int answer, int *step)
     }
     return 0;
 }
+
 int go_back_to_previous(int answer, int* step)
 {
     if (answer == CarType_Q && *step >= Engine_Q)
@@ -286,80 +283,7 @@ int go_back_to_previous(int answer, int* step)
     return FAIL;
 }
 
-int main()
-{
-    int step = CarType_Q;
-
-    while (1)
-    {
-        if (step == CarType_Q)
-            print_car_option();
-        else if (step == Engine_Q)
-            print_engine_option();
-        else if (step == brakeSystem_Q)
-            print_brake_system_option();
-        else if (step == SteeringSystem_Q)
-            print_steer_system_option();
-        else if (step == Run_Test)
-            print_run_test();
-
-        int answer = get_parsed_input();
-
-        if (answer == EXIT_PROGRAM)
-            break;
-        else if (answer == INVALID_INPUT)
-            continue;
-
-        if (check_valid_answer(step, answer) == INVALID_INPUT)
-            continue;
-
-        if (go_back_to_first(answer, &step) == SUCCESS)
-            continue;
-
-        if (go_back_to_previous(answer, &step) == SUCCESS)
-            continue;
-
-        if (step == CarType_Q)
-        {
-            selectCarType(answer);
-            delay(800);
-            step = Engine_Q;
-        }
-        else if (step == Engine_Q)
-        {
-            selectEngine(answer);
-            delay(800);
-            step = brakeSystem_Q;
-        }
-        else if (step == brakeSystem_Q)
-        {
-            selectbrakeSystem(answer);
-            delay(800);
-            step = SteeringSystem_Q;
-        }
-        else if (step == SteeringSystem_Q)
-        {
-            selectSteeringSystem(answer);
-            delay(800);
-            step = Run_Test;
-        }
-        else if (step == Run_Test)
-        {
-            if (answer == RUN) {
-                runProducedCar();
-                delay(2000);
-            }
-            else if (answer == TEST) {
-                printf("Test...\n");
-                delay(1500);
-                testProducedCar();
-                delay(2000);
-            }
-        }
-    }
-}
-
-void selectCarType(int car_type)
+void selectCarType(int car_type, int *stack)
 {
     stack[CarType_Q] = car_type;
     if (car_type == SEDAN)
@@ -370,7 +294,7 @@ void selectCarType(int car_type)
         printf("차량 타입으로 Truck을 선택하셨습니다.\n");
 }
 
-void selectEngine(int engine)
+void selectEngine(int engine, int *stack)
 {
     stack[Engine_Q] = engine;
     if (engine == GM)
@@ -383,7 +307,7 @@ void selectEngine(int engine)
         printf("고장난 엔진을 선택하셨습니다.\n");
 }
 
-void selectbrakeSystem(int brake_system)
+void selectbrakeSystem(int brake_system, int *stack)
 {
     stack[brakeSystem_Q] = brake_system;
     if (brake_system == MANDO)
@@ -394,7 +318,7 @@ void selectbrakeSystem(int brake_system)
         printf("BOSCH 제동장치를 선택하셨습니다.\n");
 }
 
-void selectSteeringSystem(int steer_system)
+void selectSteeringSystem(int steer_system, int *stack)
 {
     stack[SteeringSystem_Q] = steer_system;
     if (steer_system == BOSCH_S)
@@ -403,38 +327,66 @@ void selectSteeringSystem(int steer_system)
         printf("MOBIS 조향장치를 선택하셨습니다.\n");
 }
 
-int isValidCheck()
+#define ENABLE_LOG  (1)
+#define DISABLE_LOG (0)
+int isValidCheck(int enable_log, const int * const stack)
 {
     if (stack[CarType_Q] == SEDAN && stack[brakeSystem_Q] == CONTINENTAL)
     {
+        if (enable_log) {
+            printf("자동차 부품 조합 테스트 결과 : FAIL\n");
+            printf("Sedan에는 Continental제동장치 사용 불가\n");
+        }
         return false;
     }
     else if (stack[CarType_Q] == SUV && stack[Engine_Q] == TOYOTA)
     {
+        if (enable_log) {
+            printf("자동차 부품 조합 테스트 결과 : FAIL\n");
+            printf("SUV에는 TOYOTA엔진 사용 불가\n");
+        }
         return false;
     }
     else if (stack[CarType_Q] == TRUCK && stack[Engine_Q] == WIA)
     {
+        if (enable_log) {
+            printf("자동차 부품 조합 테스트 결과 : FAIL\n");
+            printf("Truck에는 WIA엔진 사용 불가\n");
+        }
         return false;
     }
     else if (stack[CarType_Q] == TRUCK && stack[brakeSystem_Q] == MANDO)
     {
+        if (enable_log) {
+            printf("자동차 부품 조합 테스트 결과 : FAIL\n");
+            printf("Truck에는 Mando제동장치 사용 불가\n");
+        }
         return false;
     }
     else if (stack[brakeSystem_Q] == BOSCH_B && stack[SteeringSystem_Q] != BOSCH_S)
     {
+        if (enable_log) {
+            printf("자동차 부품 조합 테스트 결과 : FAIL\n");
+            if (stack[SteeringSystem_Q] == MOBIS)
+            {
+                printf("Bosch엔진에는 Mobis제동장치 사용 불가\n");
+            }
+        }
         return false;
     }
     else
     {
+        if (enable_log) {
+            printf("자동차 부품 조합 테스트 결과 : PASS\n");
+        }
         return true;
     }
     return true;
 }
 
-void runProducedCar()
+void runProducedCar(const int * const stack)
 {
-    if (isValidCheck() == false)
+    if (isValidCheck(DISABLE_LOG, stack) == false)
     {
         printf("자동차가 동작되지 않습니다\n");
     }
@@ -475,38 +427,77 @@ void runProducedCar()
     }
 }
 
-void testProducedCar()
+int main()
 {
-    if (stack[CarType_Q] == SEDAN && stack[brakeSystem_Q] == CONTINENTAL)
+
+    int stack[10];
+    int step = CarType_Q;
+
+    while (1)
     {
-        printf("자동차 부품 조합 테스트 결과 : FAIL\n");
-        printf("Sedan에는 Continental제동장치 사용 불가\n");
-    }
-    else if (stack[CarType_Q] == SUV && stack[Engine_Q] == TOYOTA)
-    {
-        printf("자동차 부품 조합 테스트 결과 : FAIL\n");
-        printf("SUV에는 TOYOTA엔진 사용 불가\n");
-    }
-    else if (stack[CarType_Q] == TRUCK && stack[Engine_Q] == WIA)
-    {
-        printf("자동차 부품 조합 테스트 결과 : FAIL\n");
-        printf("Truck에는 WIA엔진 사용 불가\n");
-    }
-    else if (stack[CarType_Q] == TRUCK && stack[brakeSystem_Q] == MANDO)
-    {
-        printf("자동차 부품 조합 테스트 결과 : FAIL\n");
-        printf("Truck에는 Mando제동장치 사용 불가\n");
-    }
-    else if (stack[brakeSystem_Q] == BOSCH_B && stack[SteeringSystem_Q] != BOSCH_S)
-    {
-        printf("자동차 부품 조합 테스트 결과 : FAIL\n");
-        if (stack[SteeringSystem_Q] == MOBIS)
+        if (step == CarType_Q)
+            print_car_option();
+        else if (step == Engine_Q)
+            print_engine_option();
+        else if (step == brakeSystem_Q)
+            print_brake_system_option();
+        else if (step == SteeringSystem_Q)
+            print_steer_system_option();
+        else if (step == Run_Test)
+            print_run_test();
+
+        int answer = get_parsed_input();
+
+        if (answer == EXIT_PROGRAM)
+            break;
+        else if (answer == INVALID_INPUT)
+            continue;
+
+        if (check_valid_answer(step, answer) == INVALID_INPUT)
+            continue;
+
+        if (go_back_to_first(answer, &step) == SUCCESS)
+            continue;
+
+        if (go_back_to_previous(answer, &step) == SUCCESS)
+            continue;
+
+        if (step == CarType_Q)
         {
-            printf("Bosch엔진에는 Mobis제동장치 사용 불가\n");
+            selectCarType(answer, stack);
+            delay(800);
+            step = Engine_Q;
         }
-    }
-    else
-    {
-        printf("자동차 부품 조합 테스트 결과 : PASS\n");
+        else if (step == Engine_Q)
+        {
+            selectEngine(answer, stack);
+            delay(800);
+            step = brakeSystem_Q;
+        }
+        else if (step == brakeSystem_Q)
+        {
+            selectbrakeSystem(answer, stack);
+            delay(800);
+            step = SteeringSystem_Q;
+        }
+        else if (step == SteeringSystem_Q)
+        {
+            selectSteeringSystem(answer, stack);
+            delay(800);
+            step = Run_Test;
+        }
+        else if (step == Run_Test)
+        {
+            if (answer == RUN) {
+                runProducedCar(stack);
+                delay(2000);
+            }
+            else if (answer == TEST) {
+                printf("Test...\n");
+                delay(1500);
+                isValidCheck(ENABLE_LOG, stack);
+                delay(2000);
+            }
+        }
     }
 }
