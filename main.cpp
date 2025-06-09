@@ -50,6 +50,7 @@ enum Engine
     GM = 1,
     TOYOTA,
     WIA,
+    BROKEN,
     Engine_MAX
 };
 
@@ -75,7 +76,7 @@ enum RunTest
     RunTest_MIN = -1,
     RUN = 1,
     TEST = 2,
-    RunTest_MAX = 3
+    RunTest_MAX
 };
 void delay(int ms)
 {
