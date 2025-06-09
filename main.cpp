@@ -24,7 +24,7 @@ void runProducedCar();
 void testProducedCar();
 void delay(int ms);
 
-enum QuesionType
+enum QuestionType
 {   
     QuestionType_MIN = -1,
     CarType_Q = 0,
@@ -265,6 +265,27 @@ int check_valid_answer(int step, int answer)
     return 0;
 }
 
+#define SUCCESS (1)
+#define FAIL    (0)
+int go_back_to_first(int answer, int *step)
+{
+    if (answer == CarType_Q && *step == Run_Test)
+    {
+        *step = CarType_Q;
+        return SUCCESS;
+    }
+    return 0;
+}
+int go_back_to_previous(int answer, int* step)
+{
+    if (answer == CarType_Q && *step >= Engine_Q)
+    {
+        *step -= 1;
+        return SUCCESS;
+    }
+    return FAIL;
+}
+
 int main()
 {
     int step = CarType_Q;
@@ -292,19 +313,11 @@ int main()
         if (check_valid_answer(step, answer) == INVALID_INPUT)
             continue;
 
-        // 처음으로 돌아가기
-        if (answer == 0 && step == Run_Test)
-        {
-            step = CarType_Q;
+        if (go_back_to_first(answer, &step) == SUCCESS)
             continue;
-        }
 
-        // 이전으로 돌아가기
-        if (answer == 0 && step >= 1)
-        {
-            step -= 1;
+        if (go_back_to_previous(answer, &step) == SUCCESS)
             continue;
-        }
 
         if (step == CarType_Q)
         {
@@ -385,9 +398,9 @@ void selectSteeringSystem(int steer_system)
 {
     stack[SteeringSystem_Q] = steer_system;
     if (steer_system == BOSCH_S)
-        printf("BOSCH 제동장치를 선택하셨습니다.\n");
+        printf("BOSCH 조향장치를 선택하셨습니다.\n");
     if (steer_system == MOBIS)
-        printf("MOBIS 제동장치를 선택하셨습니다.\n");
+        printf("MOBIS 조향장치를 선택하셨습니다.\n");
 }
 
 int isValidCheck()
@@ -409,10 +422,6 @@ int isValidCheck()
         return false;
     }
     else if (stack[brakeSystem_Q] == BOSCH_B && stack[SteeringSystem_Q] != BOSCH_S)
-    {
-        return false;
-    }
-    else if (stack[brakeSystem_Q] != BOSCH_B && stack[SteeringSystem_Q] == BOSCH_S)
     {
         return false;
     }
