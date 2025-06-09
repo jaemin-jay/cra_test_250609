@@ -174,7 +174,6 @@ int get_parsed_input()
 }
 int main()
 {
-  //  char buf[100];
     int step = CarType_Q;
 
     while (1)
@@ -191,36 +190,8 @@ int main()
         else if (step == Run_Test)
             print_run_test();
 
-        
-
-    //    printf("INPUT > ");
-   //     fgets(buf, sizeof(buf), stdin);
-
-        // 엔터 개행문자 제거
-    //    char* context = nullptr;
-   //     strtok_s(buf, "\r", &context);
-    //    strtok_s(buf, "\n", &context);
-
-    //    if (!strcmp(buf, "exit"))
-    //    {
-    //        printf("바이바이\n");
-    //        break;
-    //    }
-
-
-        // 숫자로 된 대답인지 확인
-     //   char* checkNumber;
-    //    int answer = strtol(buf, &checkNumber, 10); // 문자열을 10진수로 변환
-
-        // 입력받은 문자가 숫자가 아니라면
-      //  if (*checkNumber != '\0')
-      //  {
-      //      printf("ERROR :: 숫자만 입력 가능\n");
-      ///      delay(800);
-      //      continue;
-      //  }
-
         int answer = get_parsed_input();
+
         if (answer == EXIT_PROGRAM)
             break;
 
