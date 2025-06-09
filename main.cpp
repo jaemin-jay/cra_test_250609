@@ -31,33 +31,38 @@ enum QuesionType
     brakeSystem_Q,
     SteeringSystem_Q,
     Run_Test,
+    QuestionType_MAX
 };
 
 enum CarType
 {
     SEDAN = 1,
     SUV,
-    TRUCK
+    TRUCK,
+    CarType_MAX
 };
 
 enum Engine
 {
     GM = 1,
     TOYOTA,
-    WIA
+    WIA,
+    Engine_MAX
 };
 
-enum brakeSystem
+enum BrakeSystem
 {
     MANDO = 1,
     CONTINENTAL,
-    BOSCH_B
+    BOSCH_B,
+    BrakeSystem_MAX
 };
 
 enum SteeringSystem
 {
     BOSCH_S = 1,
-    MOBIS
+    MOBIS,
+    SteeringSystem_MAX
 };
 
 void delay(int ms)
