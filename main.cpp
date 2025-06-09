@@ -8,7 +8,7 @@ int main()
 */
 
 #include <stdio.h>
-#include <string.h>
+#include <string>
 #include <stdlib.h>
 
 #define CLEAR_SCREEN "\033[H\033[2J"
@@ -19,6 +19,33 @@ void selectbrakeSystem(int brake_system, int *stack);
 void selectSteeringSystem(int steer_system, int *stack);
 void runProducedCar(const int * const stack);
 void delay(int ms);
+
+using namespace std;
+
+/* strategy interface */
+class Engine {
+    virtual std::string getName() const = 0;
+    virtual ~Engine() = default;
+};
+
+class BrakeSystem {
+public:
+    virtual std::string getBrand() const = 0;
+    virtual ~BrakeSystem() = default;
+};
+class SteeringSystem
+{
+public:
+    virtual std::string getType() const = 0;
+    virtual ~SteeringSystem() = default;
+};
+
+
+
+
+
+
+
 
 enum QuestionType
 {   
