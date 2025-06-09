@@ -185,7 +185,6 @@ int get_parsed_input()
     return answer;
 }
 
-
 int is_car_type_valid(int answer)
 {
     if (answer >= CarType_MAX || answer <= CarType_MIN)
@@ -287,8 +286,7 @@ int main()
 
         if (answer == EXIT_PROGRAM)
             break;
-
-        if (answer == INVALID_INPUT)
+        else if (answer == INVALID_INPUT)
             continue;
 
         if (check_valid_answer(step, answer) == INVALID_INPUT)
@@ -332,17 +330,18 @@ int main()
             delay(800);
             step = Run_Test;
         }
-        else if (step == Run_Test && answer == 1)
+        else if (step == Run_Test)
         {
-            runProducedCar();
-            delay(2000);
-        }
-        else if (step == Run_Test && answer == 2)
-        {
-            printf("Test...\n");
-            delay(1500);
-            testProducedCar();
-            delay(2000);
+            if (answer == RUN) {
+                runProducedCar();
+                delay(2000);
+            }
+            else if (answer == TEST) {
+                printf("Test...\n");
+                delay(1500);
+                testProducedCar();
+                delay(2000);
+            }
         }
     }
 }
