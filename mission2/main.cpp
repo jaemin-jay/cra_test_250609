@@ -44,48 +44,48 @@ public:
 // === Concrete Implementations ===
 class GMEngine : public Engine {
 public:
-    std::string getName() const override { return "GM Engine"; }
+    std::string getName() const override { return "GM"; }
 };
 
 class TOYOTAEngine : public Engine {
 public:
-    std::string getName() const override { return "TOYOTA Engine"; }
+    std::string getName() const override { return "TOYOTA"; }
 };
 
 class WIAEngine : public Engine {
 public:
-    std::string getName() const override { return "WIA Engine"; }
+    std::string getName() const override { return "WIA"; }
 };
 
 class BROKENEngine : public Engine {
 public:
-    std::string getName() const override { return "BROKEN Engine"; }
+    std::string getName() const override { return "BROKEN"; }
 };
 
 class BoschBrake : public BrakeSystem {
 public:
-    std::string getBrand() const override { return "Bosch Brake"; }
+    std::string getBrand() const override { return "Bosch_b"; }
 };
 
 class MANDOBrake : public BrakeSystem {
 public:
-    std::string getBrand() const override { return "MANDO Brake"; }
+    std::string getBrand() const override { return "MANDO"; }
 };
 
 class CONTINENTALBrake : public BrakeSystem {
 public:
-    std::string getBrand() const override { return "CONTINENTAL Brake"; }
+    std::string getBrand() const override { return "CONTINENTAL"; }
 };
 
 
 class BOSCHSteering : public SteeringSystem {
 public:
-    std::string getType() const override { return "BOSCH Steering"; }
+    std::string getType() const override { return "Bosch_s"; }
 };
 
 class MOBISSteering : public SteeringSystem {
 public:
-    std::string getType() const override { return "Electronic Steering"; }
+    std::string getType() const override { return "MOBIS"; }
 };
 
 // === Vehicle ===
@@ -170,24 +170,27 @@ public:
             throw std::invalid_argument("자동차 부품 조합 테스트 : FAIL\nSUV에는 TOYOTA엔진 사용 불가\n");
         }
 
-        if (vt == VehicleType::Sedan && bt == BrakeType::CONTINENTAL) {
+        else if (vt == VehicleType::Sedan && bt == BrakeType::CONTINENTAL) {
             valid = false;
             throw std::invalid_argument("자동차 부품 조합 테스트 : FAIL\nSedan에는 Continental제동장치 사용 불가\n");
         }
-        if (vt == VehicleType::TRUCK && et == EngineType::WIA) {
+        else if (vt == VehicleType::TRUCK && et == EngineType::WIA) {
             valid = false;
             throw std::invalid_argument("자동차 부품 조합 테스트 : FAIL\nTruck에는 WIA엔진 사용 불가\n");
         }
-        if (vt == VehicleType::TRUCK && bt == BrakeType::MANDO) {
+        else if (vt == VehicleType::TRUCK && bt == BrakeType::MANDO) {
             valid = false;
             throw std::invalid_argument("자동차 부품 조합 테스트 : FAIL\nTruck에는 Mando제동장치 사용 불가\n");
         }
-        if (bt == BrakeType::Bosch_b && st != SteeringType::Bosch_s) {
+        else if (bt == BrakeType::Bosch_b && st != SteeringType::Bosch_s) {
             valid = false;
             throw std::invalid_argument("자동차 부품 조합 테스트 : FAIL\n");
         }
-
-        valid = true;
+        else if (et == EngineType::BROKEN) {
+            valid = false;
+        }
+        else 
+            valid = true;
         return std::make_unique<Vehicle>(
             createEngine(et),
             createBrake(bt),
@@ -660,3 +663,4 @@ int main()
         }
     }
 }
+
