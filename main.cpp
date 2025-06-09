@@ -83,7 +83,6 @@ void delay(int ms)
 void print_car_option()
 {
     printf(CLEAR_SCREEN);
-
     printf("        ______________\n");
     printf("       /|            | \n");
     printf("  ____/_|_____________|____\n");
@@ -94,6 +93,7 @@ void print_car_option()
     printf("1. Sedan\n");
     printf("2. SUV\n");
     printf("3. Truck\n");
+    printf("===============================\n");
 }
 
 void print_brake_system_option()
@@ -104,6 +104,7 @@ void print_brake_system_option()
     printf("1. MANDO\n");
     printf("2. CONTINENTAL\n");
     printf("3. BOSCH\n");
+    printf("===============================\n");
 }
 
 void print_engine_option()
@@ -115,6 +116,7 @@ void print_engine_option()
     printf("2. TOYOTA\n");
     printf("3. WIA\n");
     printf("4. 고장난 엔진\n");
+    printf("===============================\n");
 }
 
 void print_steer_system_option()
@@ -124,6 +126,7 @@ void print_steer_system_option()
     printf("0. 뒤로가기\n");
     printf("1. BOSCH\n");
     printf("2. MOBIS\n");
+    printf("===============================\n");
 }
 
 void print_run_test()
@@ -134,10 +137,44 @@ void print_run_test()
     printf("0. 처음 화면으로 돌아가기\n");
     printf("1. RUN\n");
     printf("2. Test\n");
+    printf("===============================\n");
+}
+
+#define EXIT_PROGRAM    (-1)
+#define INVALID_INPUT   (-2)
+int get_parsed_input()
+{
+    char buf[100];
+    int step = CarType_Q;
+    printf("INPUT > ");
+    fgets(buf, sizeof(buf), stdin);
+
+    // 엔터 개행문자 제거
+    char* context = nullptr;
+    strtok_s(buf, "\r", &context);
+    strtok_s(buf, "\n", &context);
+
+    if (!strcmp(buf, "exit"))
+    {
+        printf("바이바이\n");
+        return EXIT_PROGRAM;
+    }
+
+    // 숫자로 된 대답인지 확인
+    char* checkNumber;
+    int answer = strtol(buf, &checkNumber, 10); // 문자열을 10진수로 변환
+    if (*checkNumber != '\0')
+    {
+        printf("ERROR :: 숫자만 입력 가능\n");
+        delay(800);
+        return INVALID_INPUT;
+    }
+
+    return answer;
 }
 int main()
 {
-    char buf[100];
+  //  char buf[100];
     int step = CarType_Q;
 
     while (1)
@@ -154,33 +191,41 @@ int main()
         else if (step == Run_Test)
             print_run_test();
 
-        printf("===============================\n");
+        
 
-        printf("INPUT > ");
-        fgets(buf, sizeof(buf), stdin);
+    //    printf("INPUT > ");
+   //     fgets(buf, sizeof(buf), stdin);
 
         // 엔터 개행문자 제거
-        char* context = nullptr;
-        strtok_s(buf, "\r", &context);
-        strtok_s(buf, "\n", &context);
+    //    char* context = nullptr;
+   //     strtok_s(buf, "\r", &context);
+    //    strtok_s(buf, "\n", &context);
 
-        if (!strcmp(buf, "exit"))
-        {
-            printf("바이바이\n");
-            break;
-        }
+    //    if (!strcmp(buf, "exit"))
+    //    {
+    //        printf("바이바이\n");
+    //        break;
+    //    }
+
 
         // 숫자로 된 대답인지 확인
-        char* checkNumber;
-        int answer = strtol(buf, &checkNumber, 10); // 문자열을 10진수로 변환
+     //   char* checkNumber;
+    //    int answer = strtol(buf, &checkNumber, 10); // 문자열을 10진수로 변환
 
         // 입력받은 문자가 숫자가 아니라면
-        if (*checkNumber != '\0')
-        {
-            printf("ERROR :: 숫자만 입력 가능\n");
-            delay(800);
+      //  if (*checkNumber != '\0')
+      //  {
+      //      printf("ERROR :: 숫자만 입력 가능\n");
+      ///      delay(800);
+      //      continue;
+      //  }
+
+        int answer = get_parsed_input();
+        if (answer == EXIT_PROGRAM)
+            break;
+
+        if (answer == INVALID_INPUT)
             continue;
-        }
 
         if (step == CarType_Q && !(answer >= 1 && answer <= 3))
         {
