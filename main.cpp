@@ -25,8 +25,9 @@ void testProducedCar();
 void delay(int ms);
 
 enum QuesionType
-{
-    CarType_Q,
+{   
+    QuestionType_MIN = 0,
+    CarType_Q = 0,
     Engine_Q,
     brakeSystem_Q,
     SteeringSystem_Q,
@@ -36,6 +37,7 @@ enum QuesionType
 
 enum CarType
 {
+    CarType_MIN = 0,
     SEDAN = 1,
     SUV,
     TRUCK,
@@ -44,6 +46,7 @@ enum CarType
 
 enum Engine
 {
+    Engine_MIN = -1,
     GM = 1,
     TOYOTA,
     WIA,
@@ -52,6 +55,7 @@ enum Engine
 
 enum BrakeSystem
 {
+    BrakeSystem_MIN = -1,
     MANDO = 1,
     CONTINENTAL,
     BOSCH_B,
@@ -60,11 +64,19 @@ enum BrakeSystem
 
 enum SteeringSystem
 {
+    SteeringSystem_MIN = -1,
     BOSCH_S = 1,
     MOBIS,
     SteeringSystem_MAX
 };
 
+enum RunTest
+{
+    RunTest_MIN = -1,
+    RUN = 1,
+    TEST = 2,
+    RunTest_MAX = 3
+};
 void delay(int ms)
 {
     volatile int sum = 0;
@@ -140,8 +152,8 @@ void print_run_test()
     printf("===============================\n");
 }
 
-#define EXIT_PROGRAM    (-1)
-#define INVALID_INPUT   (-2)
+#define EXIT_PROGRAM    (0xdeaddead)
+#define INVALID_INPUT   (0xdeadbeef)
 int get_parsed_input()
 {
     char buf[100];
@@ -172,13 +184,94 @@ int get_parsed_input()
 
     return answer;
 }
+
+
+int is_car_type_valid(int answer)
+{
+    if (answer >= CarType_MAX || answer <= CarType_MIN)
+        return INVALID_INPUT;
+
+    return 0;
+}
+
+int is_engine_valid(int answer)
+{
+    if (answer >= Engine_MAX || answer <= Engine_MIN)
+        return INVALID_INPUT;
+
+    return 0;
+}
+
+int is_steer_system_valid(int answer)
+{
+    if (answer >= SteeringSystem_MAX || answer <= SteeringSystem_MIN)
+        return INVALID_INPUT;
+
+    return 0;
+}
+
+int is_brake_system_valid(int answer)
+{
+    if (answer >= BrakeSystem_MAX || answer <= BrakeSystem_MIN)
+        return INVALID_INPUT;
+
+    return 0;
+}
+
+int is_run_test_valid(int answer)
+{
+    if (answer >= RunTest_MAX || answer <= RunTest_MIN)
+        return INVALID_INPUT;
+
+    return 0;
+}
+
+int check_valid_answer(int step, int answer)
+{
+    if (step == CarType_Q && is_car_type_valid(answer))
+    {
+        printf("ERROR :: 차량 타입은 1 ~ 3 범위만 선택 가능\n");
+        delay(800);
+        return INVALID_INPUT;
+    }
+    else if (step == Engine_Q && is_engine_valid(answer))
+    {
+        printf("ERROR :: 엔진은 1 ~ 4 범위만 선택 가능\n");
+        delay(800);
+        return INVALID_INPUT;
+    }
+
+    if (step == brakeSystem_Q && is_brake_system_valid(answer))
+    {
+        printf("ERROR :: 제동장치는 1 ~ 3 범위만 선택 가능\n");
+        delay(800);
+        return INVALID_INPUT;
+    }
+
+    if (step == SteeringSystem_Q && is_steer_system_valid(answer))
+    {
+        printf("ERROR :: 조향장치는 1 ~ 2 범위만 선택 가능\n");
+        delay(800);
+        return INVALID_INPUT;
+    }
+
+    if (step == Run_Test && is_run_test_valid(answer))
+    {
+        printf("ERROR :: Run 또는 Test 중 하나를 선택 필요\n");
+        delay(800);
+        return INVALID_INPUT;
+    }
+
+    return 0;
+}
+
+
 int main()
 {
     int step = CarType_Q;
 
     while (1)
     {
-
         if (step == CarType_Q)
             print_car_option();
         else if (step == Engine_Q)
@@ -198,40 +291,8 @@ int main()
         if (answer == INVALID_INPUT)
             continue;
 
-        if (step == CarType_Q && !(answer >= 1 && answer <= 3))
-        {
-            printf("ERROR :: 차량 타입은 1 ~ 3 범위만 선택 가능\n");
-            delay(800);
+        if (check_valid_answer(step, answer) == INVALID_INPUT)
             continue;
-        }
-
-        if (step == Engine_Q && !(answer >= 0 && answer <= 4))
-        {
-            printf("ERROR :: 엔진은 1 ~ 4 범위만 선택 가능\n");
-            delay(800);
-            continue;
-        }
-
-        if (step == brakeSystem_Q && !(answer >= 0 && answer <= 3))
-        {
-            printf("ERROR :: 제동장치는 1 ~ 3 범위만 선택 가능\n");
-            delay(800);
-            continue;
-        }
-
-        if (step == SteeringSystem_Q && !(answer >= 0 && answer <= 2))
-        {
-            printf("ERROR :: 조향장치는 1 ~ 2 범위만 선택 가능\n");
-            delay(800);
-            continue;
-        }
-
-        if (step == Run_Test && !(answer >= 0 && answer <= 2))
-        {
-            printf("ERROR :: Run 또는 Test 중 하나를 선택 필요\n");
-            delay(800);
-            continue;
-        }
 
         // 처음으로 돌아가기
         if (answer == 0 && step == Run_Test)
