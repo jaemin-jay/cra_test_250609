@@ -171,7 +171,7 @@ int get_parsed_input()
 
     // 숫자로 된 대답인지 확인
     char* checkNumber;
-    int answer = strtol(buf, &checkNumber, 10); // 문자열을 10진수로 변환
+    int parsed_input = strtol(buf, &checkNumber, 10); // 문자열을 10진수로 변환
     if (*checkNumber != '\0')
     {
         printf("ERROR :: 숫자만 입력 가능\n");
@@ -179,79 +179,79 @@ int get_parsed_input()
         return INVALID_INPUT;
     }
 
-    return answer;
+    return parsed_input;
 }
 
-int is_car_type_valid(int answer)
+int is_car_type_valid(int car_type)
 {
-    if (answer >= CarType_MAX || answer <= CarType_MIN)
+    if (car_type >= CarType_MAX || car_type <= CarType_MIN)
         return INVALID_INPUT;
 
     return 0;
 }
 
-int is_engine_valid(int answer)
+int is_engine_valid(int engine)
 {
-    if (answer >= Engine_MAX || answer <= Engine_MIN)
+    if (engine >= Engine_MAX || engine <= Engine_MIN)
         return INVALID_INPUT;
 
     return 0;
 }
 
-int is_steer_system_valid(int answer)
+int is_steer_system_valid(int steer_system)
 {
-    if (answer >= SteeringSystem_MAX || answer <= SteeringSystem_MIN)
+    if (steer_system >= SteeringSystem_MAX || steer_system <= SteeringSystem_MIN)
         return INVALID_INPUT;
 
     return 0;
 }
 
-int is_brake_system_valid(int answer)
+int is_brake_system_valid(int brake_system)
 {
-    if (answer >= BrakeSystem_MAX || answer <= BrakeSystem_MIN)
+    if (brake_system >= BrakeSystem_MAX || brake_system <= BrakeSystem_MIN)
         return INVALID_INPUT;
 
     return 0;
 }
 
-int is_run_test_valid(int answer)
+int is_run_test_valid(int run_test)
 {
-    if (answer >= RunTest_MAX || answer <= RunTest_MIN)
+    if (run_test >= RunTest_MAX || run_test <= RunTest_MIN)
         return INVALID_INPUT;
 
     return 0;
 }
 
-int check_valid_answer(int step, int answer)
+int validate_input(int input, const int * const step)
 {
-    if (step == CarType_Q && is_car_type_valid(answer))
+    if (*step == CarType_Q && is_car_type_valid(input))
     {
         printf("ERROR :: 차량 타입은 %d ~ %d 범위만 선택 가능\n", CarType_MIN + 1, CarType_MAX - 1);
         delay(800);
         return INVALID_INPUT;
     }
-    else if (step == Engine_Q && is_engine_valid(answer))
+    else if (*step == Engine_Q && is_engine_valid(input))
     {
         printf("ERROR :: 엔진은 %d ~ %d 범위만 선택 가능\n", Engine_MIN + 2, Engine_MAX - 1);
         delay(800);
         return INVALID_INPUT;
     }
 
-    if (step == brakeSystem_Q && is_brake_system_valid(answer))
+    if (*step == brakeSystem_Q && is_brake_system_valid(input))
     {
         printf("ERROR :: 제동장치는 %d ~ %d 범위만 선택 가능\n", BrakeSystem_MIN + 2, BrakeSystem_MAX - 1);
         delay(800);
         return INVALID_INPUT;
     }
 
-    if (step == SteeringSystem_Q && is_steer_system_valid(answer))
+    if (*step == SteeringSystem_Q && is_steer_system_valid(input))
     {
         printf("ERROR :: 조향장치는 %d ~ %d 범위만 선택 가능\n", SteeringSystem_MIN + 2, SteeringSystem_MAX - 1);
         delay(800);
         return INVALID_INPUT;
     }
 
-    if (step == Run_Test && is_run_test_valid(answer))
+    if (*step == Run_Test && is_run_test_valid(input))
     {
         printf("ERROR :: Run 또는 Test 중 하나를 선택 필요\n");
         delay(800);
@@ -263,9 +263,9 @@ int check_valid_answer(int step, int answer)
 
 #define SUCCESS (1)
 #define FAIL    (0)
-int go_back_to_first(int answer, int *step)
+int go_back_to_first(int input, int *step)
 {
-    if (answer == CarType_Q && *step == Run_Test)
+    if (input == CarType_Q && *step == Run_Test)
     {
         *step = CarType_Q;
         return SUCCESS;
@@ -273,9 +273,9 @@ int go_back_to_first(int answer, int *step)
     return 0;
 }
 
-int go_back_to_previous(int answer, int* step)
+int go_back_to_previous(int input, int* step)
 {
-    if (answer == CarType_Q && *step >= Engine_Q)
+    if (input == CarType_Q && *step >= Engine_Q)
     {
         *step -= 1;
         return SUCCESS;
@@ -429,7 +429,6 @@ void runProducedCar(const int * const stack)
 
 int main()
 {
-
     int stack[10];
     int step = CarType_Q;
 
@@ -446,53 +445,53 @@ int main()
         else if (step == Run_Test)
             print_run_test();
 
-        int answer = get_parsed_input();
+        int input_from_user = get_parsed_input();
 
-        if (answer == EXIT_PROGRAM)
+        if (input_from_user == EXIT_PROGRAM)
             break;
-        else if (answer == INVALID_INPUT)
+        else if (input_from_user == INVALID_INPUT)
             continue;
 
-        if (check_valid_answer(step, answer) == INVALID_INPUT)
+        if (validate_input(input_from_user, &step) == INVALID_INPUT)
             continue;
 
-        if (go_back_to_first(answer, &step) == SUCCESS)
+        if (go_back_to_first(input_from_user, &step) == SUCCESS)
             continue;
 
-        if (go_back_to_previous(answer, &step) == SUCCESS)
+        if (go_back_to_previous(input_from_user, &step) == SUCCESS)
             continue;
 
         if (step == CarType_Q)
         {
-            selectCarType(answer, stack);
+            selectCarType(input_from_user, stack);
             delay(800);
             step = Engine_Q;
         }
         else if (step == Engine_Q)
         {
-            selectEngine(answer, stack);
+            selectEngine(input_from_user, stack);
             delay(800);
             step = brakeSystem_Q;
         }
         else if (step == brakeSystem_Q)
         {
-            selectbrakeSystem(answer, stack);
+            selectbrakeSystem(input_from_user, stack);
             delay(800);
             step = SteeringSystem_Q;
         }
         else if (step == SteeringSystem_Q)
         {
-            selectSteeringSystem(answer, stack);
+            selectSteeringSystem(input_from_user, stack);
             delay(800);
             step = Run_Test;
         }
         else if (step == Run_Test)
         {
-            if (answer == RUN) {
+            if (input_from_user == RUN) {
                 runProducedCar(stack);
                 delay(2000);
             }
-            else if (answer == TEST) {
+            else if (input_from_user == TEST) {
                 printf("Test...\n");
                 delay(1500);
                 isValidCheck(ENABLE_LOG, stack);
