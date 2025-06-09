@@ -22,7 +22,6 @@ using namespace std;
 std::string vehicleStr, engineStr, brakeStr, steeringStr;
 int valid = true;
 
-// === Interface Definitions ===
 class Engine {
 public:
     virtual std::string getName() const = 0;
@@ -41,7 +40,6 @@ public:
     virtual ~SteeringSystem() = default;
 };
 
-// === Concrete Implementations ===
 class GMEngine : public Engine {
 public:
     std::string getName() const override { return "GM"; }
@@ -88,7 +86,6 @@ public:
     std::string getType() const override { return "MOBIS"; }
 };
 
-// === Vehicle ===
 class Vehicle {
     std::unique_ptr<Engine> engine;
     std::unique_ptr<BrakeSystem> brake;
@@ -123,13 +120,11 @@ public:
     }
 };
 
-// === Enums ===
 enum class VehicleType { Sedan = 1, SUV, TRUCK };
 enum class EngineType { GM = 1, TOYOTA, WIA, BROKEN };
 enum class BrakeType { MANDO = 1, CONTINENTAL, Bosch_b };
 enum class SteeringType { Bosch_s = 1, MOBIS };
 
-// === Creator Functions ===
 std::unique_ptr<Engine> createEngine(EngineType type) {
     switch (type) {
     case EngineType::GM: return std::make_unique<GMEngine>();
@@ -159,7 +154,6 @@ std::unique_ptr<SteeringSystem> createSteering(SteeringType type) {
     throw std::invalid_argument("Invalid steering type");
 }
 
-// === Factory ===
 class VehicleFactory {
 public:
     static std::unique_ptr<Vehicle> createVehicle(
@@ -199,7 +193,6 @@ public:
     }
 };
 
-// === Input Parsing Helpers ===
 VehicleType parseVehicleType(const std::string& s) {
     if (s == "SUV") return VehicleType::SUV;
     if (s == "Sedan") return VehicleType::Sedan;
@@ -366,7 +359,6 @@ int get_parsed_input()
     printf("INPUT > ");
     fgets(buf, sizeof(buf), stdin);
 
-    // 엔터 개행문자 제거
     char* context = nullptr;
     strtok_s(buf, "\r", &context);
     strtok_s(buf, "\n", &context);
@@ -377,9 +369,8 @@ int get_parsed_input()
         return EXIT_PROGRAM;
     }
 
-    // 숫자로 된 대답인지 확인
     char* checkNumber;
-    int parsed_input = strtol(buf, &checkNumber, 10); // 문자열을 10진수로 변환
+    int parsed_input = strtol(buf, &checkNumber, 10);
     if (*checkNumber != '\0')
     {
         printf("ERROR :: 숫자만 입력 가능\n");
